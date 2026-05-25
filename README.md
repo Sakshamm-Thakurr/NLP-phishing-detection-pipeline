@@ -62,7 +62,7 @@ Designed to look and feel like a deployable SOC product.
 | Header Parsing | Python `email` library |
 | Frontend | HTML/CSS, Jinja2 (dark-themed UI) |
 | Email Format | `.eml` file support |
-
+| ML Classification | TF-IDF Vectorizer + Logistic Regression (scikit-learn) |
 ---
 
 ## 🚀 Getting Started
