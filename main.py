@@ -5,7 +5,7 @@ from modules.header_analyzer import analyze_headers
 from modules.url_extractor   import analyze_urls
 from modules.nlp_scorer      import score_body
 from modules.verdict_engine  import calculate_verdict
-
+from modules.ml_classifier import classify_email
 EMAIL_PATH = "sample_emails/test1.eml"
 
 def run_analysis(email_path):
@@ -32,8 +32,12 @@ def run_analysis(email_path):
     print("  Running NLP body analysis...")
     nlp = score_body(parsed)
 
+    print("  Running ML classifier (TF-IDF + Logistic Regression)...")
+    ml = classify_email(parsed)
+
     # ── Verdict ──────────────────────────────────────────────
-    report = calculate_verdict(headers, urls, nlp)
+    report = calculate_verdict(headers, urls, nlp, ml)
+    print(f"  ML Score      : {report['score_breakdown']['ml']}  [{report['ml_label']} — {report['ml_confidence']:.0%} confidence]")
 
     # ── Print Report ─────────────────────────────────────────
     print("\n" + "=" * 60)

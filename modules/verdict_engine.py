@@ -1,19 +1,18 @@
-def calculate_verdict(header_results, url_results, nlp_results):
+def calculate_verdict(header_results, url_results, nlp_results, ml_results=None):
     """
-    Combines scores from all three modules into one final verdict.
-    Returns a complete analysis report dictionary.
+    Combines scores from all modules into one final verdict.
     """
-
     header_score = header_results.get("risk_score", 0)
     url_score    = url_results.get("risk_score", 0)
     nlp_score    = nlp_results.get("risk_score", 0)
-    total_score  = header_score + url_score + nlp_score
+    ml_score     = ml_results.get("risk_score", 0) if ml_results else 0
+    total_score  = header_score + url_score + nlp_score + ml_score
 
-    # Collect all flags from every module
     all_flags = (
         header_results.get("risk_flags", []) +
         url_results.get("risk_flags", []) +
-        nlp_results.get("risk_flags", [])
+        nlp_results.get("risk_flags", []) +
+        (ml_results.get("risk_flags", []) if ml_results else [])
     )
 
     verdict, confidence, recommendation = _score_to_verdict(total_score, all_flags)
@@ -25,11 +24,14 @@ def calculate_verdict(header_results, url_results, nlp_results):
         "score_breakdown": {
             "header": header_score,
             "url":    url_score,
-            "nlp":    nlp_score
+            "nlp":    nlp_score,
+            "ml":     ml_score        # ← new
         },
-        "total_flags":      len(all_flags),
-        "flags":            all_flags,
-        "recommendation":   recommendation
+        "ml_label":       ml_results.get("ml_label", "N/A") if ml_results else "N/A",
+        "ml_confidence":  ml_results.get("ml_confidence", 0) if ml_results else 0,
+        "total_flags":    len(all_flags),
+        "flags":          all_flags,
+        "recommendation": recommendation
     }
 
 
